@@ -1,35 +1,76 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import React, { Component } from 'react';
+import axios from 'axios';
+import BootstrapTable from "react-bootstrap-table-next";
+import paginationFactory from "react-bootstrap-table2-paginator";
+export default class Inicio extends Component {
 
-const Inicio = () => {
-    return(
-        <div>
-            <p>Inicio</p>
-            <table className="table table-striped table-hove">
-                <thead>
-                    <tr>
-                        <th>País</th>
-                        <th>ISO</th>
-                    </tr>
-                </thead>
-            <tbody>
-                <tr >
-                
-                    <td><Link to="/Paises">Colombia</Link></td>
-                    <td>COL</td>
-                </tr>
-                <tr>
-                <td><Link to="/Paises">Estado Unidos</Link></td>
-                    <td>USA</td>
-                </tr>
-                <tr>
-                <td><Link to="/Paises">Japón</Link></td>
-                    <td>JPN</td>
-                </tr>
-            </tbody>
-            </table>
-        </div>
-    )
+    state = {
+        columns: [
+            {
+                dataField: "country",
+                text: "País",
+                sort: true
+            },
+            {
+                dataField: "countryInfo.iso3",
+                text: "ISO",
+                sort: true
+            },
+            {
+                dataField: "todayCases",
+                text: "Casos COVID de hoy",
+                sort: true
+            },
+            {
+                dataField: "todayDeaths",
+                text: "Muertes COVID de hoy",
+                sort: true
+            },
+            {
+                dataField: "todayRecovered",
+                text: "Recuperador de hoy",
+                sort: true
+            }
+        ],
+        data: [],
+    }
+
+    tableRowEvents = {
+        onClick: (e, row, rowIndex) => {
+            console.log(`clicked on row with index: ${row}`);
+            window.location = `/Paises?iso3=${row.countryInfo.iso3}`;
+        }
+    }
+
+    async componentDidMount() {
+        const res = await axios.get('https://disease.sh/v3/covid-19/countries');
+        this.setState({
+            data: res.data
+        });
+    }
+
+    render() {
+        return (
+            <div>
+                <p>Inicio</p>
+
+                <BootstrapTable
+                    bootstrap4
+                    hover
+                    keyField="country"
+                    data={this.state.data}
+                    columns={this.state.columns}
+                    pagination={paginationFactory({ sizePerPage: 50 })}
+                    rowEvents={this.tableRowEvents}
+                />
+
+                <hr></hr>
+
+
+
+            </div>
+        )
+    }
 
 }
-
-export default Inicio
