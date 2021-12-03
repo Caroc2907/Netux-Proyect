@@ -1,9 +1,8 @@
-import { Link, useNavigate } from 'react-router-dom'
 import React, { Component } from 'react';
 import axios from 'axios';
 import BootstrapTable from "react-bootstrap-table-next";
 import paginationFactory from "react-bootstrap-table2-paginator";
-export default class Inicio extends Component {
+export default class COVIDSummary extends Component {
 
     state = {
         columns: [
@@ -38,8 +37,7 @@ export default class Inicio extends Component {
 
     tableRowEvents = {
         onClick: (e, row, rowIndex) => {
-            console.log(`clicked on row with index: ${row}`);
-            window.location = `/Paises?iso3=${row.countryInfo.iso3}`;
+            window.location = `/Country-Information?iso3=${row.countryInfo.iso3}`;
         }
     }
 
@@ -53,7 +51,7 @@ export default class Inicio extends Component {
     render() {
         return (
             <div>
-                <p>Inicio</p>
+                <h1>Covid Summary</h1>
 
                 <BootstrapTable
                     bootstrap4

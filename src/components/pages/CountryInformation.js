@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
-import queryString from 'querystring'
 import axios from 'axios';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import faker from 'faker';
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
-export default class Paises extends Component {
 
+const AVG_LIMIT = 15;
+const SUMMARY_LIMIT = 60;
+export default class CountryInformation extends Component {
+    
+     
     state = {
         country: '',
         avgCases: 0,
@@ -29,37 +31,22 @@ export default class Paises extends Component {
             datasets: []
         }
     };
-
+    
     getLabels() {
         let labels = [];
         for (let i = 1; i < 61; i++) {
-            labels.push('día: ' + i);
+            labels.push(`día: ${i}`);
         }
         return labels;
     }
 
-    getAvgDeaths(deaths) {
-        let avgDeaths = 0;
-        for (const key in deaths) {
-            avgDeaths += deaths[key];
-        }
-        return avgDeaths / 15;
-    }
 
-    getAvgCases(cases) {
-        let avgCases = 0;
-        for (const key in cases) {
-            avgCases += cases[key];
+    getAvg(avgInfo) {
+        let avg = 0;
+        for (const key in avgInfo) {
+            avg += avgInfo[key];
         }
-        return avgCases / 15;
-    }
-
-    getAvgRecovered(recovered) {
-        let avgRecovered = 0;
-        for (const key in recovered) {
-            avgRecovered += recovered[key];
-        }
-        return avgRecovered / 15;
+        return avg / AVG_LIMIT;
     }
 
     getHistoricalCases(historicalCasesObj) {
@@ -82,18 +69,18 @@ export default class Paises extends Component {
         const search = window.location.search;
         const params = new URLSearchParams(search);
         const iso3 = params.get('iso3');
-        const res = await axios.get(`https://corona.lmao.ninja/v2/historical/${iso3}?lastdays=15`);
+        const res = await axios.get(`https://corona.lmao.ninja/v2/historical/${iso3}?lastdays=${AVG_LIMIT}`);
         let cases = res.data.timeline.cases;
         let deaths = res.data.timeline.deaths;
         let recovered = res.data.timeline.recovered;
 
-        const historicalDataRes = await axios.get(`https://corona.lmao.ninja/v2/historical/${iso3}?lastdays=60`);
+        const historicalDataRes = await axios.get(`https://corona.lmao.ninja/v2/historical/${iso3}?lastdays=${SUMMARY_LIMIT}`);
 
         this.setState({
             country: res.data.country,
-            avgCases: this.getAvgCases(cases),
-            avgDeaths: this.getAvgDeaths(deaths),
-            avgRecovered: this.getAvgRecovered(recovered),
+            avgCases: this.getAvg(cases),
+            avgDeaths: this.getAvg(deaths),
+            avgRecovered: this.getAvg(recovered),
             dataPerDay: {
                 labels: this.getLabels(),
                 datasets: [
@@ -120,7 +107,7 @@ export default class Paises extends Component {
     render() {
         return (
             <div>
-                <p>País: {this.state.country}</p>
+                <h1>País: {this.state.country}</h1>
                 <div class="container">
                     <div class="row">
 

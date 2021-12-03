@@ -1,8 +1,8 @@
 const Navbar = () => {
     return(
-        <div className= "navbar">
+        <nav className= "navbar">
             Netux Test
-        </div>
+        </nav>
     )
 }
 
